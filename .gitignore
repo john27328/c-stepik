@@ -3,6 +3,7 @@
 *.o
 *.Debug
 *.Release
-*.user
 *.autosave
 Makefile
+*.user*
+*.user
