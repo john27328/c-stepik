@@ -2,11 +2,8 @@
 *.stash
 *.exe
 *.o
-build-iostreamTest-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/Makefile
 *.Debug
 *.Release
 *.user
 *.autosave
-build-macros-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/Makefile
-build-sumTest-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/Makefile
-build-charStream-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/Makefile
+Makefile
