@@ -9,7 +9,7 @@ unsigned strlen(const char *str)
     {
         p++;
     }
-    return p-str;
+    return p - str;
 }
 
 
