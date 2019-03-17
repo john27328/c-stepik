@@ -10,6 +10,23 @@ struct String {
     /* Реализуйте этот конструктор */
     String(const char *str = "");
     String(size_t n, char c);
+    String(const String &other);
+    String &operator=(const String &other)
+    {
+        if(this != &other)
+        {
+            delete [] this->str;
+            this->size = other.size;
+            this->str = new char[other.size + 1];
+
+            for (int i = 0; i < other.size + 1; ++i) {
+                this->str[i] = other.str[i];
+            }
+
+        }
+        return *this;
+    }
+    void print();
     ~String();
 
     size_t size;
@@ -36,6 +53,22 @@ String::String(size_t n, char c)
         this->str[i] = c;
     }
     this->str[size] = '\0';
+}
+
+String::String(const String &other): size(other.size), str(new char[other.size + 1])
+{
+    for (size_t i = 0; i < other.size+1; i++) {
+        this->str[i]=other.str[i];
+    }
+    //str[other.size] = '\0';
+}
+
+void String::print()
+{
+    for (int i = 0; i < this->size; ++i) {
+        cout << this->str[i];
+    }
+    cout << endl;
 }
 
 String::~String()
@@ -83,9 +116,9 @@ void String::append(String &other)
 
 int main()
 {
-    cout << "Hello World!" << endl;
-    String s1("Hello,");
+    String s1(",");
     String s2(" world!");
-    s1.append(s2);
+    s1 = s1;
+    s1.print();
     return 0;
 }
