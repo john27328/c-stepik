@@ -17,7 +17,7 @@ int main()
 {
     //foo(97);
     short sh = 10;
-    promotion(sh);
+    //promotion(sh);
     //double sq = square(2.0);
     return 0;
 }
