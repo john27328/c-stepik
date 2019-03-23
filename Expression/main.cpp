@@ -62,6 +62,15 @@ private:
     char op;
 };
 
+bool check_equals(Expression const *left, Expression const *right)
+{
+    char const* l = &(((char const*)left)[0]);
+    char const* r = &(((char const*)right)[0]);
+    cout << " l = " << l << " r = " << r << endl;
+    return *l == *r;
+}
+
+
 int main()
 {
     // сначала создаём объекты для подвыражения 4.5 * 5
@@ -74,6 +83,8 @@ int main()
 
     // тут освобождаются *все* выделенные объекты
     // (например, sube будет правым операндом expr, поэтому его удалять не нужно)
+    cout << check_equals(new Number(4.5), new Number(3)) <<endl;
+    cout << check_equals(new Number(4.5), expr) <<endl;
     delete expr;
     return 0;
 }
