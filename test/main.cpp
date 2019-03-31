@@ -2,27 +2,58 @@
 
 using namespace std;
 
-struct ivector3d
+class A
 {
-    int array[3];
+public:
+    virtual void a(){
+        cout << "public A"<<endl;
+    }
+    virtual ~A(){}
+
+private:
+    virtual void b(){
+        cout << "private A"<<endl;
+    }
+protected:
+    virtual void c(){
+        cout << "protected A"<<endl;
+    }
 };
 
-void scale(ivector3d v, int k)
+class B: private A
 {
-    for (int i = 0; i != 3; ++i)
-        v.array[i] *= k;
-}
+    void b(){
+        cout << "private B"<<endl;
+        A::a();
 
-int main()
+    }
+    void a(){
+        cout << "public B"<<endl;
+    }
+    void c(){
+        cout << "protected B"<<endl;
+    }
+};
+
+class C: public B
 {
-    ivector3d iv3d = {1,1,1};
-    for (int i = 0; i != 3; ++i)
-        cout << iv3d.array[i] <<" ";
-    cout << endl;
-    scale(iv3d, 2);
-    for (int i = 0; i != 3; ++i)
-        cout << iv3d.array[i] <<" ";
-    cout << endl;
+public:
+    void b(){
+        cout << "private C"<<endl;
+        B::c();
+    }
+private:
+    void a(){
+        cout << "public C"<<endl;
+    }
+};
 
+int main ()
+{
+    A a;
+    B b;
+    C c;
+    a.a();
+    c.b();
     return 0;
 }
