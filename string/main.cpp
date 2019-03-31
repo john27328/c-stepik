@@ -11,32 +11,47 @@ struct String {
     String(const char *str = "");
     String(size_t n, char c);
     String(const String &other);
-    String &operator=(const String &other)
-    {
-        if(this != &other)
-        {
-            delete [] this->str;
-            this->size = other.size;
-            this->str = new char[other.size + 1];
-
-            for (int i = 0; i < other.size + 1; ++i) {
-                this->str[i] = other.str[i];
-            }
-
-        }
-        return *this;
-    }
-    void print();
+    String &operator=(const String &other);
+    void print() const;
     ~String();
 
     size_t size;
     char *str;
 
     size_t strlen(const char *str);
-    char *strcoppy(const char *str, size_t size);
+    char *strcoppy(const char *str, size_t size) const;
     void append(String &other);
 
+
+private:
+    struct TmpString{
+        TmpString(size_t i, String *str):i(i),str(str) {}
+        ~TmpString(){
+            delete str;
+            delete[] newstr;
+        }
+        size_t i;
+        String *str;
+        char *newstr;
+        String operator[] (size_t j){
+            size_t newsize = j-i;
+            newstr = new char[newsize + 1];
+            for (size_t k = 0; k<newsize; k++){
+                newstr[k] = str->str[k+i];
+            }
+            newstr[newsize] = '\0';
+            return String(newstr);
+        }
+    };
+public:
+    TmpString operator[] (size_t i) const
+    {
+        auto tmp = new String(*this);
+        return TmpString(i,tmp);
+    }
 };
+
+
 
 String::String(const char *str)
 {
@@ -63,7 +78,23 @@ String::String(const String &other): size(other.size), str(new char[other.size +
     //str[other.size] = '\0';
 }
 
-void String::print()
+String &String::operator=(const String &other)
+{
+    if(this != &other)
+    {
+        delete [] this->str;
+        this->size = other.size;
+        this->str = new char[other.size + 1];
+
+        for (int i = 0; i < other.size + 1; ++i) {
+            this->str[i] = other.str[i];
+        }
+
+    }
+    return *this;
+}
+
+void String::print() const
 {
     for (int i = 0; i < this->size; ++i) {
         cout << this->str[i];
@@ -86,7 +117,7 @@ size_t String::strlen(const char *str)
     return p - str;
 }
 
-char *String::strcoppy(const char *str, size_t size)
+char *String::strcoppy(const char *str, size_t size) const
 {
     char *newstr = new char[size+1];
     for(size_t i = 0; i<size; i++)
@@ -116,9 +147,11 @@ void String::append(String &other)
 
 int main()
 {
-    String s1(",");
-    String s2(" world!");
-    s1 = s1;
-    s1.print();
+
+    String const hello("hello");
+    String const hell = hello[0][4]; // теперь в hell хранится подстрока "hell"
+    hell.print();
+    String const ell  = hello[1][4]; // теперь в ell хранится подстрока "ell"
+    ell.print();
     return 0;
 }
