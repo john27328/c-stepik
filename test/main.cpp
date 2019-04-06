@@ -1,4 +1,5 @@
 #include <iostream>
+#include "test.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ class C: public B
 public:
     void b(){
         cout << "private C"<<endl;
-        B::c();
+        //B::c();
     }
 private:
     void a(){

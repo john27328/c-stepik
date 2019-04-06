@@ -123,7 +123,7 @@ struct SharedPtr
     ~SharedPtr(){
         c_->i--;
         if (c_->i == 0){
-            cout << "del " << ptr_<<endl;
+            //cout << "del " << ptr_<<endl;
             delete c_;
             delete ptr_;
         }
@@ -135,7 +135,7 @@ struct SharedPtr
     }
     SharedPtr& operator=(const SharedPtr &sPtr){
         c_->i--;
-        if (c_->i ==0){
+        if (c_->i == 0){
             delete c_;
             delete ptr_;
         }
@@ -155,7 +155,7 @@ struct SharedPtr
         }
         ptr_=ptr;
         c_ = new counter;
-        c_++;
+        c_->i++;
     }
     Expression& operator*() const{
         Expression &tmp = *ptr_;
