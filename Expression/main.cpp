@@ -70,6 +70,43 @@ bool check_equals(Expression const *left, Expression const *right)
     return *l == *r;
 }
 
+struct ScopedPtr
+{
+    // реализуйте следующие методы:
+    //
+    explicit ScopedPtr(Expression *ptr = 0): ptr_(ptr) {}
+    ~ScopedPtr(){
+        delete ptr_;
+    }
+    Expression* get() const{
+        return ptr_;
+    }
+    Expression* release()
+    {
+        Expression* tmp = ptr_;
+        ptr_ = nullptr;
+        return tmp;
+    }
+    void reset(Expression *ptr = 0){
+        delete ptr_;
+        ptr_=ptr;
+    }
+    Expression& operator*() const{
+        Expression &tmp = *ptr_;
+        return tmp;
+    }
+    Expression* operator->() const{
+        return ptr_;
+    }
+
+
+private:
+    // запрещаем копирование ScopedPtr
+    ScopedPtr(const ScopedPtr&);
+    ScopedPtr& operator=(const ScopedPtr&);
+
+    Expression *ptr_;
+};
 
 int main()
 {
