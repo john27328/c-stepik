@@ -23,31 +23,28 @@ struct String {
     void append(String &other);
 
 
-private:
     struct TmpString{
-        TmpString(size_t i, String *str):i(i),str(str) {}
-        ~TmpString(){
-            delete str;
-            delete[] newstr;
-        }
-        size_t i;
-        String *str;
-        char *newstr;
-        String operator[] (size_t j){
-            size_t newsize = j-i;
+        TmpString(const size_t i=0, const char *str = 0):i(i),str(str) {}
+        const size_t i;
+        const char * str;
+        char * newstr;
+        String operator[] (const size_t j){
+            const size_t newsize = j-i;
             newstr = new char[newsize + 1];
             for (size_t k = 0; k<newsize; k++){
-                newstr[k] = str->str[k+i];
+                newstr[k] = str[k+i];
             }
             newstr[newsize] = '\0';
-            return String(newstr);
+            String tmp(newstr);
+            delete [] newstr;
+            return tmp;
         }
     };
+
 public:
-    TmpString operator[] (size_t i) const
+    TmpString operator[] (const size_t i) const
     {
-        auto tmp = new String(*this);
-        return TmpString(i,tmp);
+        return TmpString(i,this->str);
     }
 };
 
@@ -147,7 +144,7 @@ void String::append(String &other)
 
 int main()
 {
-
+String str;
     String const hello("hello");
     String const hell = hello[0][4]; // теперь в hell хранится подстрока "hell"
     hell.print();
