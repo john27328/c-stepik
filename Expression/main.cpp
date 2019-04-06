@@ -99,7 +99,6 @@ struct ScopedPtr
         return ptr_;
     }
 
-
 private:
     // запрещаем копирование ScopedPtr
     ScopedPtr(const ScopedPtr&);
@@ -108,20 +107,90 @@ private:
     Expression *ptr_;
 };
 
+struct counter
+{
+    int i = 0;
+};
+
+struct SharedPtr
+{
+    // реализуйте следующие методы
+    //
+    explicit SharedPtr(Expression *ptr = 0):ptr_(ptr) {
+        c_ = new counter;
+        c_->i++;
+    }
+    ~SharedPtr(){
+        c_->i--;
+        if (c_->i == 0){
+            cout << "del " << ptr_<<endl;
+            delete c_;
+            delete ptr_;
+        }
+    }
+    SharedPtr(const SharedPtr & sPtr){
+        ptr_ = sPtr.ptr_;
+        c_ = sPtr.c_;
+        c_->i++;
+    }
+    SharedPtr& operator=(const SharedPtr &sPtr){
+        c_->i--;
+        if (c_->i ==0){
+            delete c_;
+            delete ptr_;
+        }
+        ptr_ = sPtr.ptr_;
+        c_ = sPtr.c_;
+        c_->i++;
+        return *this;
+    }
+    Expression* get() const{
+        return ptr_;
+    }
+    void reset(Expression *ptr = 0){
+        c_->i--;
+        if (c_->i == 0){
+            delete ptr_;
+            delete c_;
+        }
+        ptr_=ptr;
+        c_ = new counter;
+        c_++;
+    }
+    Expression& operator*() const{
+        Expression &tmp = *ptr_;
+        return tmp;
+    }
+    Expression* operator->() const{
+        return ptr_;
+    }
+
+private:
+    counter *c_;
+    Expression *ptr_;
+};
+
 int main()
 {
-    // сначала создаём объекты для подвыражения 4.5 * 5
-    Expression * sube = new BinaryOperation(new Number(4.5), '*', new Number(5));
-    // потом используем его в выражении для +
-    Expression * expr = new BinaryOperation(new Number(3), '+', sube);
+//    // сначала создаём объекты для подвыражения 4.5 * 5
+//    Expression * sube = new BinaryOperation(new Number(4.5), '*', new Number(5));
+//    // потом используем его в выражении для +
+//    Expression * expr = new BinaryOperation(new Number(3), '+', sube);
 
-    // вычисляем и выводим результат: 25.5
-    std::cout << expr->evaluate() << std::endl;
+//    // вычисляем и выводим результат: 25.5
+//    std::cout << expr->evaluate() << std::endl;
 
-    // тут освобождаются *все* выделенные объекты
-    // (например, sube будет правым операндом expr, поэтому его удалять не нужно)
-    cout << check_equals(new Number(4.5), new Number(3)) <<endl;
-    cout << check_equals(new Number(4.5), expr) <<endl;
-    delete expr;
+//    // тут освобождаются *все* выделенные объекты
+//    // (например, sube будет правым операндом expr, поэтому его удалять не нужно)
+//    cout << check_equals(new Number(4.5), new Number(3)) <<endl;
+//    cout << check_equals(new Number(4.5), expr) <<endl;
+//    delete expr;
+
+    SharedPtr ptr1(new BinaryOperation(new Number(4.5), '*', new Number(5)));
+    SharedPtr ptr2 = ptr1;
+    SharedPtr ptr3(new Number(4.5));
+    SharedPtr ptr4 = ptr3;
+    ptr3 = ptr1;
+    Expression *ptr = ptr1.get();
     return 0;
 }
