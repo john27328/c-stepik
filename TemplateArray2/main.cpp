@@ -13,10 +13,12 @@ public:
        //   по умолчанию, то второй аргумент этого конструктора
        //   обязателен.
     explicit Array(size_t size, const T& value):size_(size){
-        array = (T**)new char*[size];
+        array = (T**) new char*[size];
         for (size_t i = 0; i < size; i++)
         {
-            array[i] = new T(value);
+            auto tmp = new T(value);
+            //cout << "test " << *tmp <<" ptr " << (void *)tmp <<endl ;
+            array[i] = tmp;
         }
     }
 
@@ -32,10 +34,10 @@ public:
     //   присваивания не определен.
     Array(const Array  &arr){
         this->size_ = arr.size_;
-        array = (T**)new char*[this->size_];
+        array =(T**) new char*[this->size_];
         for (size_t i = 0; i < size_; i++)
         {
-            array[i] = new T(*(arr.array[i]));
+            array[i] = (new T(*((T*)arr.array[i])));
         }
     }
 
@@ -43,7 +45,7 @@ public:
     //   деструктор, если он вам необходим.
     ~Array(){
         for (size_t i = 0; i<size_; i++) {
-            delete[](char*) array[i];
+            delete array[i];
         }
         delete[] (char**) array;
 
@@ -56,14 +58,14 @@ public:
         if (&arr != this)
         {
             for (size_t i = 0; i<size_; i++) {
-                delete[] (char*)array[i];
+                delete array[i];
             }
             delete[] (char**) array;
             size_ = arr.size_;
-            array = (T**)new char**[size_];
+            array = (T**)new char*[size_];
             for (size_t i = 0; i < size_; i++)
             {
-                array[i] = new T(*(arr.array[i]));
+                array[i] = (new T(*((T*)arr.array[i])));
             }
         }
         return *this;
@@ -75,17 +77,17 @@ public:
 
     T& operator[](size_t i){
         //cout << "test " <<   array[i];
-        return (*array[i]);
+        return (*(T *)array[i]);
     }
 
     const T& operator[](size_t i)const{
-        return array[i];
+        return (T&)(*array[i]);
     }
     void print()
     {
         for (size_t i = 0; i < size_; i++)
         {
-            cout << array[i] <<endl;
+            cout << (T)(*array[i]) <<endl;
         }
     }
 
@@ -152,7 +154,9 @@ int main(int c, char** v)
     test5();
     test6();
     test7();
-
+cout << "end!!!!!!" << endl;
+//    Array<char * > arr(5, "qwer");
+//    arr.print();
     return 0;
 }
 
@@ -299,12 +303,12 @@ void test5()
     {
         cout << "*****more**********" << endl;
         Array<char> ar(size_t(4), '0');
-        cout << ar[10] << endl;
+        cout << ar[3] << endl;
     }
     {
         cout << "*****less**********" << endl;
         Array<char> ar(size_t(4), '0');
-        cout << ar[-10] << endl;
+        cout << ar[2] << endl;
     }
     return;
 }
