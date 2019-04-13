@@ -5,12 +5,6 @@
 template <typename T>
 class Array
 {
-    // explicit Array(size_t size = 0, const T& value = T())
-    //   конструктор класса, который создает
-    //   Array размера size, заполненный значениями
-    //   value типа T. Считайте что у типа T есть
-    //   конструктор, который можно вызвать без
-    //   без параметров, либо он ему не нужен.
 public:
     explicit Array(size_t size = 0, const T& value = T()):size_(size){
         array = new T[size];
@@ -20,10 +14,6 @@ public:
         }
     }
 
-    // Array(const Array &)
-    //   конструктор копирования, который создает
-    //   копию параметра. Считайте, что для типа
-    //   T определен оператор присваивания.
     Array(const Array  &arr){
         this->size_ = arr.size_;
         array = new T[size_];
@@ -33,15 +23,10 @@ public:
         }
     }
 
-    // ~Array()
-    //   деструктор, если он вам необходим.
-
     ~Array(){
         delete[] array;
     }
 
-    // Array& operator=(...)
-    //   оператор присваивания.
     Array& operator=(const Array  &arr)
     {
         if (arr.array != this->array)
@@ -57,15 +42,9 @@ public:
         return *this;
     }
 
-    // size_t size() const
-    //   возвращает размер массива (количество
-    //                              элементов).
     size_t size() const{
         return size_;
     }
-    // T& operator[](size_t)
-    // const T& operator[](size_t) const
-    //   две версии оператора доступа по индексу.
 
     T& operator[](size_t i){
         //std::cout << "test " <<   array[i];
