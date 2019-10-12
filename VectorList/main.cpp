@@ -62,12 +62,13 @@ public:
                 if(itList_ != (*p_).end())
                 {
                     itVector_ = (*itList_).begin();
-                    itList_--;
                 }
             }
             return *this;
         }
         const_iterator operator-- (){
+            if(itList_ == (*p_).end())
+                --itList_;
             if(itVector_ == (*itList_).begin()){
                 itList_--;
                 itVector_ = --((*itList_).end());
@@ -75,6 +76,20 @@ public:
                 itVector_--;
             }
             return *this;
+        }
+
+        bool operator== (const_iterator  it){
+            if(itList_ == it.itList_ && itVector_ == itVector_)
+                return 1;
+            else
+                return 0;
+        }
+
+        bool operator!= (const_iterator  it){
+            if(itList_ != it.itList_ || itVector_ != itVector_)
+                return 1;
+            else
+                return 0;
         }
 
     private:
@@ -88,7 +103,7 @@ public:
          return const_iterator(&data_, data_.begin(), (*(data_.begin())).begin());
     }
     const_iterator end()   const {
-        return const_iterator(&data_, --(data_.end()), (*(--(data_.end()))).end()); }
+        return const_iterator(&data_, data_.end(), (*(--(data_.end()))).end()); }
 
     // определите const_reverse_iterator
     //... const_reverse_iterator ...
@@ -108,8 +123,8 @@ int main()
     for(int i = 0; i < 10; i++){
         std::vector<double> vec;
         for (int j = 0; j < 10; j++){
-            vec.push_back(q++ +.5);
-            cout << q +.5 -1<<" ";
+            vec.push_back(q++);
+            cout << q - 1 <<" ";
         }
         v.append(vec.begin(), vec.end());
         cout << endl;
@@ -122,5 +137,9 @@ int main()
     cout << *(--it) << endl;
     cout << *(--(v.end())) << endl;
 
+    for(auto i: v){
+        cout << i << " ";
+    }
+    cout << endl;
     return 0;
 }
