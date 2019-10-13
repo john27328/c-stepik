@@ -45,12 +45,6 @@ public:
     struct const_iterator : std::iterator<std::bidirectional_iterator_tag, const T> {
         const_iterator(){}
 
-//        const_iterator(const const_iterator &it) {
-//            p_ = it.p_;
-//            itVector_ = it.itVector_;
-//            itList_ = it.itList_;
-//        }
-
         const_iterator(const ListT *p,
                        const decltype((*p).begin()) itList,
                        const decltype((*((*p).begin())).begin()) itVector)
@@ -63,8 +57,8 @@ public:
         }
 
 
-        const T  operator->() const{
-            return *itVector_;
+        const T* operator->() const{
+            return &(*itVector_);
         }
 
         const_iterator &operator++ (){
@@ -79,6 +73,12 @@ public:
             return *this;
         }
 
+        const_iterator operator++(int){
+            auto tmp = *this;
+                ++*this;
+            return tmp;
+        }
+
         const_iterator &operator-- (){
             if(itList_ == (*p_).end())
                 --itList_;
@@ -89,6 +89,12 @@ public:
                 --itVector_;
             }
             return *this;
+        }
+
+        const_iterator operator--(int){
+            auto tmp = *this;
+                --*this;
+            return tmp;
         }
 
         bool operator== (const const_iterator  it){
@@ -135,11 +141,11 @@ private:
 
 int main()
 {
-    VectorList<double> v;
+    VectorList<char> v;
     auto *p = &v;
     int q = 0;
     for(int i = 0; i < 10; i++){
-        std::vector<double> vec;
+        std::vector<char> vec;
         for (int j = 0; j < 10; j++){
             vec.push_back(q++);
             std::cout << q - 1 <<" ";
@@ -151,9 +157,9 @@ int main()
     //list<vector<double>>::iterator it;
     std::cout << v.size() << std::endl;
     auto it = v.begin();
-    std::cout << *p->begin() << std::endl;
     std::cout << *++it << std::endl;
-    std::cout << *--it << std::endl;
+    std::cout << *it-- << std::endl;
+    std::cout << *it << std::endl;
     std::cout << *--(v.end()) << std::endl;
 
     for(auto i: v){
@@ -171,5 +177,21 @@ int main()
         std::cout << *rit << " ";
     }
     std::cout << std::endl;
+
+    VectorList<std::vector<double>> v2;
+    for(int i = 0; i < 10; i++){
+        std::vector<std::vector<double>> vec;
+        std::vector<double> tmp;
+        for (int j = 0; j < 10; j++){
+            tmp.push_back(10+i+j);
+            tmp.push_back(10+j-i);
+            vec.push_back(tmp);
+        }
+        v2.append(vec.begin(), vec.end());
+        //std::cout << std::endl;
+    }
+    auto it2 = v2.begin();
+    std::cout << (++++++++++it2)->at(1)<< std::endl;
+
     return 0;
 }
