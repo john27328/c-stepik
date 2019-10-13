@@ -1,7 +1,4 @@
 #include <iostream>
-
-using namespace std;
-
 #include <vector>
 #include <list>
 
@@ -45,17 +42,32 @@ public:
     }
 
     // определите const_iterator
-    //    template<class ItL, class ItV>
-    struct const_iterator : std::iterator<bidirectional_iterator_tag, T> {
+    struct const_iterator : std::iterator<std::bidirectional_iterator_tag, const T> {
         const_iterator(){}
-        const_iterator(const ListT *p, decltype((*p).begin()) itList, decltype((*((*p).begin())).begin()) itVector)
+
+//        const_iterator(const const_iterator &it) {
+//            p_ = it.p_;
+//            itVector_ = it.itVector_;
+//            itList_ = it.itList_;
+//        }
+
+        const_iterator(const ListT *p,
+                       const decltype((*p).begin()) itList,
+                       const decltype((*((*p).begin())).begin()) itVector)
             : p_(p), itList_(itList), itVector_(itVector){
         }
-        T operator*(){
-            return   *itVector_;
+
+
+        const T& operator*() const{
+            return *itVector_;
         }
 
-        const_iterator operator++ (){
+
+        const T  operator->() const{
+            return *itVector_;
+        }
+
+        const_iterator &operator++ (){
             itVector_++;
             if(itVector_ == (*itList_).end()){
                 itList_++;
@@ -66,27 +78,28 @@ public:
             }
             return *this;
         }
-        const_iterator operator-- (){
+
+        const_iterator &operator-- (){
             if(itList_ == (*p_).end())
                 --itList_;
             if(itVector_ == (*itList_).begin()){
-                itList_--;
+                --itList_;
                 itVector_ = --((*itList_).end());
             } else {
-                itVector_--;
+                --itVector_;
             }
             return *this;
         }
 
-        bool operator== (const_iterator  it){
-            if(itList_ == it.itList_ && itVector_ == itVector_)
+        bool operator== (const const_iterator  it){
+            if(itList_ == it.itList_ && itVector_ == it.itVector_)
                 return 1;
             else
                 return 0;
         }
 
-        bool operator!= (const_iterator  it){
-            if(itList_ != it.itList_ || itVector_ != itVector_)
+        bool operator!= (const const_iterator  it){
+            if(itList_ != it.itList_ || itVector_ != it.itVector_)
                 return 1;
             else
                 return 0;
@@ -106,11 +119,15 @@ public:
         return const_iterator(&data_, data_.end(), (*(--(data_.end()))).end()); }
 
     // определите const_reverse_iterator
-    //... const_reverse_iterator ...
+    using const_reverse_iterator = const std::reverse_iterator<const_iterator>;
 
     // определите методы rbegin / rend
-    //const_reverse_iterator rbegin() const { return ... ;   }
-    //const_reverse_iterator rend()   const { return ... ; }
+    const_reverse_iterator rbegin() const {
+        return const_reverse_iterator(end()) ;
+    }
+    const_reverse_iterator rend()   const {
+        return const_reverse_iterator(begin());
+    }
 
 private:
     ListT data_;
@@ -119,27 +136,40 @@ private:
 int main()
 {
     VectorList<double> v;
+    auto *p = &v;
     int q = 0;
     for(int i = 0; i < 10; i++){
         std::vector<double> vec;
         for (int j = 0; j < 10; j++){
             vec.push_back(q++);
-            cout << q - 1 <<" ";
+            std::cout << q - 1 <<" ";
         }
         v.append(vec.begin(), vec.end());
-        cout << endl;
+        std::cout << std::endl;
     }
 
     //list<vector<double>>::iterator it;
-    cout << v.size() << endl;
+    std::cout << v.size() << std::endl;
     auto it = v.begin();
-    cout << *(++it) << endl;
-    cout << *(--it) << endl;
-    cout << *(--(v.end())) << endl;
+    std::cout << *p->begin() << std::endl;
+    std::cout << *++it << std::endl;
+    std::cout << *--it << std::endl;
+    std::cout << *--(v.end()) << std::endl;
 
     for(auto i: v){
-        cout << i << " ";
+        std::cout << i << " ";
     }
-    cout << endl;
+    std::cout << std::endl;
+
+    auto __tmp = it;
+    std::cout << *++__tmp << std::endl;
+
+    auto rit = v.rbegin();
+    auto rend = v.rend();
+    std::cout << *--rend<< std::endl;
+    for(; rit != v.rend(); ++rit){
+        std::cout << *rit << " ";
+    }
+    std::cout << std::endl;
     return 0;
 }
