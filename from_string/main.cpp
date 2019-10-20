@@ -3,6 +3,8 @@
 #include <sstream>
 #include <exception>
 #include <memory>
+#include <vector>
+
 
 // описание класса исключения bad_from_string
 class bad_from_string: public std::exception{
@@ -41,10 +43,37 @@ T from_string(std::string const& s)
 
 
 using namespace std;
-
-int main()
+// Safe from_string() call
+#define _SFROM_STRING(type1)                        \
+    try {                                           \
+        cout << endl << "<" #type1 ">: ";           \
+        cout << from_string<type1>(str);            \
+    }                                               \
+    catch (exception const& e) {                    \
+        cout<<"catch std::exception: "<< e.what();  \
+    }                                               \
+    catch (...) {                                   \
+        cout<<"catch unknown";                      \
+    }
+using namespace std;
+void from_string_test()
 {
+    vector<string> strings{ "123", "12.3", "", " ", "abc", " 123", "123 ", "12 3", "-1", "a", "a ", " a", "a b", "A" };
+    //               string  123    12.3   e    e   "abc"   e       e       e      "-1"  "a"   e     e     e     "A"
+    //               double  123    12.3   e    e    e      e       e       e       -1    e    e     e     e      e
+    //                  int  123    e      e    e    e      e       e       e       -1    e    e     e     e      e
+    //                 char  e      e      e   ' '   e      e       e       e       e    'a'   e     e     e     'A'
+    for (auto& str : strings) {
+        cout << endl << "from_string(\'" << str << "\'):";
+        _SFROM_STRING(string);
+        _SFROM_STRING(double);
+        _SFROM_STRING(int);
+        _SFROM_STRING(char);
+        cout << endl;
+    }
+}
 
+void oldTest(){
     string s1("123  ");
     int    a1 = from_string<int>   (s1); // a1 = 123
     double b1 = from_string<double>(s1); // b1 = 123.0
@@ -70,5 +99,10 @@ int main()
         std::cout << "Default  behavior: c1 = " << ch1 << " c2 = " << ch2 << " c3 = " << ch3 << '\n';
         std::istringstream("a b c") >> std::noskipws >> ch1 >> ch2 >> ch3;
         std::cout << "noskipws behavior: c1 = " << ch1 << " c2 = " << ch2 << " c3 = " << ch3 << '\n';
+}
+
+int main()
+{
+    from_string_test();
     return 0;
 }
