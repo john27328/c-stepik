@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 #include <exception>
-#include <memory>
+//#include <cassert>
 #include <vector>
 
 
@@ -22,22 +22,39 @@ private:
 template<class T>
 T from_string(std::string const& s)
 {
-    // реализация
-    std::string tmp(s);
-    std::istringstream temp_str(tmp);
-    char tmpOut;
+    std::string tmpOutS;
     T out;
-    temp_str >> std::noskipws >> tmpOut;
-    if (tmpOut == ' '){
-        throw bad_from_string("пробел в начале строки \"" + s + "\"");
-        std::cout << "пробел в начале" << std::endl;
-    }
     std::istringstream str(s);
-    str >> std::noskipws >> out >> tmpOut;
-    if (tmpOut == ' '){
-        throw bad_from_string("пробел в конце строки \"" + s + "\"");
-        std::cout << "пробел в конце" << std::endl;
+    std::istringstream strt(s);
+    std::istringstream strt2(s);
+
+
+    strt >> std::noskipws >> tmpOutS;
+    if (tmpOutS[0] == ' '){
+        throw bad_from_string("пробел в начале строки \"" + s + "\"");
     }
+
+    str.exceptions(std::istringstream::failbit | std::istringstream::badbit);
+    if (strt2 >> std::noskipws >> out >> std::noskipws >> tmpOutS){
+        if (tmpOutS[0] == ' ')
+            throw bad_from_string("пробел в конце строки \"" + s + "\"");
+        else
+            throw bad_from_string("неверный формат в строкe \"" + s + "\"");
+
+    }
+    str.exceptions(std::istringstream::failbit | std::istringstream::badbit);
+    str >> std::noskipws >> out;
+
+
+
+//    if (!testStr2.empty()){
+//
+//        if (tmpOut == ' ')
+//            throw bad_from_string("пробел в конце строки \"" + s + "\"");
+//        else
+//            throw bad_from_string("неверный тип строки \"" + s + "\"");
+
+//    }
     return out;
 }
 
