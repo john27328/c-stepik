@@ -10,7 +10,7 @@
 class bad_from_string: public std::exception{
 public:
     bad_from_string(const std::string c): c_(c){}
-    ~bad_from_string() noexcept override{}
+    //~bad_from_string() noexcept override{}
     const char* what() const noexcept override {
         return c_.c_str();
     }
@@ -22,39 +22,28 @@ private:
 template<class T>
 T from_string(std::string const& s)
 {
-    std::string tmpOutS;
+    std::string tempOutD;
+    std::string tempOutDNS;
+    std::string tempOutS;
     T out;
     std::istringstream str(s);
     std::istringstream strt(s);
-    std::istringstream strt2(s);
 
+//    strt >> tempOutD;
+//    if (tempOutD != s){
+//        throw bad_from_string("неверный формат строки \"" + s + "\"");
+//    }
 
-    strt >> std::noskipws >> tmpOutS;
-    if (tmpOutS[0] == ' '){
-        throw bad_from_string("пробел в начале строки \"" + s + "\"");
-    }
-
-    str.exceptions(std::istringstream::failbit | std::istringstream::badbit);
-    if (strt2 >> std::noskipws >> out >> std::noskipws >> tmpOutS){
-        if (tmpOutS[0] == ' ')
-            throw bad_from_string("пробел в конце строки \"" + s + "\"");
-        else
-            throw bad_from_string("неверный формат в строкe \"" + s + "\"");
-
-    }
     str.exceptions(std::istringstream::failbit | std::istringstream::badbit);
     str >> std::noskipws >> out;
 
-
-
-//    if (!testStr2.empty()){
-//
-//        if (tmpOut == ' ')
-//            throw bad_from_string("пробел в конце строки \"" + s + "\"");
-//        else
-//            throw bad_from_string("неверный тип строки \"" + s + "\"");
-
-//    }
+    bool key = 1;
+    try {
+        str >> std::noskipws  >> tempOutS;
+    } catch (std::istringstream::failure &e) {
+        key = 0;
+    }
+    if (key) throw bad_from_string("неверный формат строки \"" + s + "\"");
     return out;
 }
 
@@ -63,8 +52,8 @@ using namespace std;
 // Safe from_string() call
 #define _SFROM_STRING(type1)                        \
     try {                                           \
-        cout << endl << "<" #type1 ">: ";           \
-        cout << from_string<type1>(str);            \
+        cout << endl << "<" #type1 ">: \'";           \
+        cout << from_string<type1>(str) << "\'";            \
     }                                               \
     catch (exception const& e) {                    \
         cout<<"catch std::exception: "<< e.what();  \
