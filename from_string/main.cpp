@@ -24,7 +24,7 @@ T from_string(std::string const& s)
 {
     std::string tempOutD;
     std::string tempOutDNS;
-    std::string tempOutS;
+    char tempOutC;
     T out;
     std::istringstream str(s);
     std::istringstream strt(s);
@@ -35,11 +35,15 @@ T from_string(std::string const& s)
 //    }
 
     str.exceptions(std::istringstream::failbit | std::istringstream::badbit);
-    str >> std::noskipws >> out;
+    try {
+        str >> std::noskipws >> out;
+    } catch (std::istringstream::failure &e) {
+        throw bad_from_string("неверный формат строки \"" + s + "\"");
+    }
 
     bool key = 1;
     try {
-        str >> std::noskipws  >> tempOutS;
+        str >> std::noskipws  >> tempOutC;
     } catch (std::istringstream::failure &e) {
         key = 0;
     }
