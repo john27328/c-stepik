@@ -1,5 +1,5 @@
 #include <iostream>
-#include <future>
+#include <thread>
 #include <list>
 #include <string>
 #include <assert.h>
@@ -17,6 +17,7 @@
 template <typename IT, typename F1, typename F2>
 auto map_reduce(IT p, IT q, F1 f1, F2 f2, const size_t threads) -> decltype (f1(*p))
 {
+    using T = decltype (f1(*p));
     auto n = std::distance(p, q);
     auto dn = n / (threads);
 
@@ -28,20 +29,32 @@ auto map_reduce(IT p, IT q, F1 f1, F2 f2, const size_t threads) -> decltype (f1(
     };
 
     IT qt = p;
-    using Future = std::future<decltype(f1(*qt))>;
-    Future vec[threads];
+    T vec[threads];
+    std::thread t[threads];
     for (size_t i = 0; i < threads - 1; i++){
         IT pt = qt;
         for (size_t j = 0; j < dn; j++){
             qt++;
         }
-        vec[i] = std::async(std::launch::async, map_reduce_tread, pt, qt, f1, f2);
+        t[i] = std::thread(
+                    [&vec, i, pt, qt, &f1, &f2, &map_reduce_tread](){
+                        vec[i] = map_reduce_tread(pt, qt, f1, f2);
+                    }
+        );
     }
-    vec[threads-1] = std::async(std::launch::async, map_reduce_tread, qt, q, f1, f2);
 
-    auto res = vec[0].get();
+    t[threads - 1] = std::thread(
+                [&vec, threads, q, qt, &f1, &f2, &map_reduce_tread](){
+                    vec[threads - 1] = map_reduce_tread(qt, q, f1, f2);
+                }
+    );
+
+
+    t[0].join();
+    auto res = vec[0];
     for (size_t i = 1; i < threads; i++){
-        res = f2(res, vec[i].get());
+        t[i].join();
+        res = f2(res, vec[i]);
     }
     return res;
 }
@@ -54,7 +67,7 @@ int main()
 //     параллельное суммирование в 3 потока
     auto sum1 = map_reduce(l1.begin(), l1.end(),
                  [](int i){return i;},
-                          std::plus<int>(), 10);
+                          std::plus<int>(), 3);
     cout << sum1<< endl;
 
     const std::vector<std::string> l = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"};
