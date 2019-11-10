@@ -50,7 +50,8 @@ void check()
 
 
 template<typename F, typename TUP, int ...INTS>
-static auto tuple_call_(F f, TUP tup, IntList<INTS ...>) -> decltype (f(std::get<INTS>(tup)...))
+static auto tuple_call_(F f, TUP tup, IntList<INTS ...>) ->
+    decltype (f(std::get<INTS>(tup)...))
 {
     return f(std::get<INTS>(tup)...);
 }
@@ -63,6 +64,16 @@ static auto apply(F f, std::tuple<Ts...> tup) ->
     return tuple_call_(f, tup,
                        typename Generate<sizeof...(Ts)>::type{});
 }
+
+
+
+
+// бинарная метафункция
+template<int a, int b>
+struct Plus
+{
+    static int const value = a + b;
+};
 
 int main()
 {
@@ -87,10 +98,19 @@ int main()
 
 //    std::cout << len3 << std::endl;
 
-    auto f = [](int x, double y, double z) { return x + y + z; };
-    auto t = std::make_tuple(30, 5.0, 1.6);  // std::tuple<int, double, double>
-    auto res = apply(f, t);
-    std::cout << res << std::endl;
+//    auto f = [](int x, double y, double z) { return x + y + z; };
+//    auto t = std::make_tuple(30, 5.0, 1.6);  // std::tuple<int, double, double>
+//    auto res = apply(f, t);
+//    std::cout << res << std::endl;
+
+
+
+    // два списка одной длины
+    using L1 = IntList<1,2,3,4,5>;
+    using L2 = IntList<1,3,7,7,2>;
+
+    // результат применения — список с поэлементными суммами
+    using L3 = Zip<L1, L2, Plus>::type;  // IntList<2, 5, 10, 11, 7>
 
     return 0;
 }
