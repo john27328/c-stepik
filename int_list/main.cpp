@@ -50,12 +50,15 @@ void check()
 
 
 template<typename F, typename TUP, int ...INTS>
-static auto tuple_call_(F f, TUP tup, IntList<INTS ...>){
+static auto tuple_call_(F f, TUP tup, IntList<INTS ...>) -> decltype (f(std::get<INTS>(tup)...))
+{
     return f(std::get<INTS>(tup)...);
 }
 
 template <typename F, typename ... Ts>
-static auto apply(F f, std::tuple<Ts...> tup)
+static auto apply(F f, std::tuple<Ts...> tup) ->
+    decltype (tuple_call_(f, tup,
+                typename Generate<sizeof...(Ts)>::type{}))
 {
     return tuple_call_(f, tup,
                        typename Generate<sizeof...(Ts)>::type{});
