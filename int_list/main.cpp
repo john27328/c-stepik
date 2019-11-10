@@ -49,28 +49,45 @@ void check()
 }
 
 
+template<typename F, typename TUP, int ...INTS>
+static auto tuple_call_(F f, TUP tup, IntList<INTS ...>){
+    return f(std::get<INTS>(tup)...);
+}
+
+template <typename F, typename ... Ts>
+static auto apply(F f, std::tuple<Ts...> tup)
+{
+    return tuple_call_(f, tup,
+                       typename Generate<sizeof...(Ts)>::type{});
+}
+
 int main()
 {
-    using primes = IntList<2,3,5,7,11,13>;
-    constexpr int head = primes::Head;
-    using odd_primes = primes::Tail;
-    check<primes>();
+//    using primes = IntList<2,3,5,7,11,13>;
+//    constexpr int head = primes::Head;
+//    using odd_primes = primes::Tail;
+//    check<primes>();
 
-    constexpr size_t len = Length<primes>::value; // 6
-    std::cout << len << std::endl;
+//    constexpr size_t len = Length<primes>::value; // 6
+//    std::cout << len << std::endl;
 
-    using L1 = IntList<2,3,4>;
+//    using L1 = IntList<2,3,4>;
 
 
-    using L2 = IntCons<1, L1>::type;   // IntList<1,2,3,4>
-    constexpr size_t len2 = Length<L2>::value; // 4
-    std::cout << len2 << std::endl;
+//    using L2 = IntCons<1, L1>::type;   // IntList<1,2,3,4>
+//    constexpr size_t len2 = Length<L2>::value; // 4
+//    std::cout << len2 << std::endl;
 
-    using L3 = Generate<5>::type;      // IntList<0,1,2,3,4>
-    constexpr size_t len3 = Length<L3>::value; // 5
-    check<L3>();
+//    using L3 = Generate<5>::type;      // IntList<0,1,2,3,4>
+//    constexpr size_t len3 = Length<L3>::value; // 5
+//    check<L3>();
 
-    std::cout << len3 << std::endl;
+//    std::cout << len3 << std::endl;
+
+    auto f = [](int x, double y, double z) { return x + y + z; };
+    auto t = std::make_tuple(30, 5.0, 1.6);  // std::tuple<int, double, double>
+    auto res = apply(f, t);
+    std::cout << res << std::endl;
 
     return 0;
 }
