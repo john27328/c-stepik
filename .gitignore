@@ -9,3 +9,5 @@ Makefile
 *.user
 *.user
 build-*
+x64/
+.vs/
