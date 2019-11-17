@@ -66,8 +66,6 @@ static auto apply(F f, std::tuple<Ts...> tup) ->
 }
 
 
-
-
 // бинарная метафункция
 template<int a, int b>
 struct Plus
@@ -110,7 +108,7 @@ int main()
     using L2 = IntList<1,3,7,7,2>;
 
     // результат применения — список с поэлементными суммами
-    using L3 = Zip<L1, L2, Plus>::type;  // IntList<2, 5, 10, 11, 7>
+    //using L3 = Zip<L1, L2, Plus>::type;  // IntList<2, 5, 10, 11, 7>
 
     return 0;
 }
